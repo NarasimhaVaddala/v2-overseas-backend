@@ -37,30 +37,50 @@ export const AddHero = TryCatch(async (req, res) => {
 });
 
 export const EditHero = TryCatch(async (req, res) => {
-  const image = req.file?.path;
+  console.log(req.file);
 
   const { title, subTitle, extraPoint } = req.body;
-
   const { id } = req.params;
 
-  const updated = await HeroSectionModal.findByIdAndUpdate(id);
+  // Find the document
+  const updated = await HeroSectionModal.findById(id);
   if (!updated) {
     return res.status(404).send({ message: "Section Not Found" });
   }
 
+  // Update fields
   if (title) updated.title = title;
   if (subTitle) updated.subTitle = subTitle;
   if (extraPoint) updated.extraPoint = extraPoint;
 
+  // Handle file update
   if (req.file) {
     const oldFile = updated.image;
-    fs.unlinkSync(oldFile);
-    updated.image = image;
+    const newImagePath = req.file.path;
+
+    // Delete old file if exists
+    if (oldFile && fs.existsSync(oldFile)) {
+      try {
+        fs.unlinkSync(oldFile);
+        console.log(`✅ Deleted old file: ${oldFile}`);
+      } catch (err) {
+        console.warn(`⚠️ Failed to delete old file: ${oldFile}`, err);
+      }
+    }
+
+    // Update image path
+    updated.image = newImagePath;
   }
 
-  return res.status(200).send(updated);
-});
+  // 🔁 Save the updated document back to DB
+  await updated.save();
 
+  // ✅ Send updated document in response
+  return res.status(200).json({
+    message: "Hero section updated successfully",
+    data: updated,
+  });
+});
 export const getHero = TryCatch(async (req, res) => {
   const { page } = req.params;
 
