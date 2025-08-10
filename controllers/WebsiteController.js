@@ -37,10 +37,10 @@ export const GetAllHomePage = TryCatch(async (req, res) => {
   // Index cards by section
   const cardMap = {};
   cardMap["study"] = cardResults.filter((c) => c.section === "study");
-  cardMap["latest-update"] = cardResults.find(
+  cardMap["latest-update"] = cardResults.filter(
     (c) => c.section === "latest-update"
   );
-  cardMap["testimonials"] = cardResults.find(
+  cardMap["testimonials"] = cardResults.filter(
     (c) => c.section === "testimonials"
   );
 
@@ -124,44 +124,53 @@ export const GetAllServicesPage = TryCatch(async (req, res) => {
 });
 
 export const GetAllVisaPage = TryCatch(async (req, res) => {
-  // 1. Fetch hero section (different model, can't batch)
-  const hero = await HeroSectionModal.findOne({ page: "visa" });
+  // 1. Fetch hero section (separate model, can't batch)
+  const hero = await HeroSectionModal.findOne({ page: "visa" }).lean();
 
-  // 2. Batch fetch all ContentModal sections in ONE query
+  // 2. Batch fetch all needed ContentModal sections
   const sectionsNeeded = ["second", "third", "visatypes"];
 
   const contentDocs = await ContentModal.find({
     page: "visa",
     section: { $in: sectionsNeeded },
-  }).lean(); // .lean() for better performance
+  }).lean();
 
-  // Create a map for easy access
-  const contentMap = {};
+  // Create a map to group sections
+  const contentMap = {
+    second: null,
+    third: null,
+    visatypes: [], // Always initialize as array
+  };
+
+  // Populate the map
   contentDocs.forEach((doc) => {
-    contentMap[doc.section] = doc;
+    if (doc.section === "second") {
+      contentMap.second = doc;
+    } else if (doc.section === "third") {
+      contentMap.third = doc;
+    } else if (doc.section === "visatypes") {
+      contentMap.visatypes.push(doc); // Push all 'visatypes' docs
+    }
   });
-
-  // Fill in case any section is missing
-  const second = contentMap["second"] || null;
-  const visaProcess = contentMap["third"] || null;
-  const visaTypeArray = contentMap["visatypes"] || null;
 
   // Prepare response
   const result = {
     hero,
-    second,
-    visaProcess,
-    visaTypeArray,
+    second: contentMap.second,
+    visaProcess: contentMap.third, // renamed for clarity
+    visaTypeArray: contentMap.visatypes, // guaranteed to be an array
   };
 
   return res.status(200).send(result);
 });
 
 export const contactDetails = TryCatch(async (req, res) => {
+  const hero = await HeroSectionModal.findOne({ page: "contact" });
+
   const contact = await contactinfo.findOne({});
   const addresses = await AddressModal.find({});
 
-  return res.status(200).send({ contact, addresses });
+  return res.status(200).send({ hero, contact, addresses });
 });
 
 export const getUniversities = TryCatch(async (req, res) => {
