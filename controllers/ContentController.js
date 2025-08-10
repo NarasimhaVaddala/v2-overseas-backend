@@ -121,7 +121,7 @@ export const getUniversities = TryCatch(async (req, res) => {
 export const getContent = TryCatch(async (req, res) => {
   const { page, section } = req.params;
 
-  if (section === "visatypes") {
+  if (section === "visatypes" || section === "terms" || section === "privacy") {
     const content = await ContentModal.find({ page, section });
     return res.status(200).send(content);
   }

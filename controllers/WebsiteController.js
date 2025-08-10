@@ -174,8 +174,9 @@ export const contactDetails = TryCatch(async (req, res) => {
 });
 
 export const getUniversities = TryCatch(async (req, res) => {
+  const hero = await HeroSectionModal.find({ page: "universities" });
   const universities = await UniversityModal.find({});
-  return res.status(200).send(universities);
+  return res.status(200).send({ hero, universities });
 });
 
 export const postContact = TryCatch(async (req, res) => {
@@ -193,4 +194,22 @@ export const postContact = TryCatch(async (req, res) => {
   });
 
   return res.status(200).send({ message: "Thankyou for contacting us" });
+});
+
+export const getTerms = TryCatch(async (req, res) => {
+  const hero = await HeroSectionModal.findOne({ page: "terms" });
+
+  const terms = await ContentModal.find({ page: "terms", section: "terms" });
+
+  return res.status(200).send({ hero, terms });
+});
+export const getprivacyPolicy = TryCatch(async (req, res) => {
+  const hero = await HeroSectionModal.findOne({ page: "privacy" });
+
+  const terms = await ContentModal.find({
+    page: "privacy",
+    section: "privacy",
+  });
+
+  return res.status(200).send({ hero, terms });
 });
