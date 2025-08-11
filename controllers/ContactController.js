@@ -100,7 +100,42 @@ export const getAddress = TryCatch(async (req, res) => {
   return res.status(200).send(addr);
 });
 
+// export const getAllPeopleContacted = TryCatch(async (req, res) => {
+//   const contacts = await ContactUsModal.find({});
+//   return res.status(200).send(contacts);
+// });
+
+// Controller
 export const getAllPeopleContacted = TryCatch(async (req, res) => {
-  const contacts = await ContactUsModal.find({});
+  const { search, startDate, endDate } = req.query;
+
+  const filter = {};
+
+  // Search across multiple fields
+  if (search) {
+    filter.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { mobile: { $regex: search, $options: "i" } },
+      { study: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  // Date filter (createdAt)
+  if (startDate || endDate) {
+    filter.createdAt = {};
+    if (startDate) {
+      filter.createdAt.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      // endDate at 23:59:59 so we include full day
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      filter.createdAt.$lte = end;
+    }
+  }
+
+  const contacts = await ContactUsModal.find(filter).sort({ createdAt: -1 });
+
   return res.status(200).send(contacts);
 });

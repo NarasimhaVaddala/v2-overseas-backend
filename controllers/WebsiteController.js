@@ -186,7 +186,7 @@ export const postContact = TryCatch(async (req, res) => {
     return res.status(400).send({ message: "Please Fill required Fields" });
   }
 
-  const newContact = await ContactUsModal.create({
+  await ContactUsModal.create({
     name,
     email,
     mobile,
