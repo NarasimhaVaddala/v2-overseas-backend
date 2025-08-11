@@ -9,6 +9,7 @@ import HeroSectionRoute from "./routes/HeroSectionRoute.js";
 import ContentRoute from "./routes/ContentRoute.js";
 import ContactAndAddress from "./routes/ContactAndAddress.js";
 import Websiteroute from "./routes/WebsiteGetRoute.js";
+import AuthRouter from "./routes/AuthRoute.js";
 
 import CardsRoute from "./routes/CardRoute.js";
 
@@ -43,6 +44,7 @@ app.use("/address", ContactAndAddress);
 app.use("/cards", CardsRoute);
 
 app.use("/api", Websiteroute);
+app.use("/auth", AuthRouter);
 
 app.use(errorMiddleware);
 

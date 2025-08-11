@@ -1,13 +1,14 @@
 import { TryCatch } from "../middlewares/error.js";
 import ContentModal from "../models/ContentModal.js";
+import ServiceModal from "../models/Service.js";
 import UniversityModal from "../models/UniversityModal.js";
 
 export const AddContent = TryCatch(async (req, res) => {
-  const { page, section } = req.params;
+  // const { page, section } = req.params;
 
-  if (!page || !section) {
-    return res.status(400).send({ message: "Page and section is required" });
-  }
+  // if (!page || !section) {
+  //   return res.status(400).send({ message: "Page and section is required" });
+  // }
 
   const { title, description, extraPoints } = req.body;
 
@@ -30,8 +31,8 @@ export const AddContent = TryCatch(async (req, res) => {
 
   if (image) body.image = image.path; // Assuming you're using Multer and want .path
 
-  body.page = page;
-  body.section = section;
+  // body.page = page;
+  // body.section = section;
 
   const newContent = await ContentModal.create(body); // Don't forget to pass body!
 
@@ -126,7 +127,7 @@ export const getContent = TryCatch(async (req, res) => {
     return res.status(200).send(content);
   }
 
-  const content = await ContentModal.findOne({ page, section });
+  const content = await ContentModal.find();
   return res.status(200).send(content);
 });
 
@@ -134,4 +135,87 @@ export const deleteContent = TryCatch(async (req, res) => {
   const { id } = req.params;
   const content = await ContentModal.findByIdAndDelete(id);
   return res.status(200).send(content);
+});
+
+// service
+export const AddService = TryCatch(async (req, res) => {
+  const { title, description, extraPoints } = req.body;
+
+  const image = req.file;
+
+  const body = {};
+
+  if (title) body.title = title;
+  if (description) body.description = description;
+
+  if (extraPoints) {
+    if (Array.isArray(JSON.parse(extraPoints))) {
+      console.log(typeof JSON.parse(extraPoints));
+
+      body.extraPoints = JSON.parse(extraPoints);
+    } else {
+      return res.status(400).send({ message: "extraPoints must be an array" });
+    }
+  }
+
+  if (image) body.image = image.path;
+
+  const newContent = await ServiceModal.create(body); // Don't forget to pass body!
+
+  res.status(201).send(newContent);
+});
+
+export const EditService = TryCatch(async (req, res) => {
+  const { id } = req.params;
+  const content = await ServiceModal.findById(id);
+  if (!content) {
+    return res.status(404).send({ message: "Content not found" });
+  }
+  const { title, description, extraPoints } = req.body;
+  const image = req.file;
+  const updateData = {};
+
+  if (title) updateData.title = title;
+  if (description) updateData.description = description;
+  if (extraPoints) {
+    if (Array.isArray(JSON.parse(extraPoints))) {
+      console.log(typeof JSON.parse(extraPoints));
+
+      updateData.extraPoints = JSON.parse(extraPoints);
+    } else {
+      return res.status(400).send({ message: "extraPoints must be an array" });
+    }
+  }
+  if (image) {
+    updateData.image = image.path; // or image.filename, depending on your storage
+  }
+
+  const updatedContent = await ServiceModal.findByIdAndUpdate(id, updateData, {
+    new: true, // Return updated document
+    runValidators: true, // Ensure schema validation runs
+  });
+});
+
+export const getAllService = TryCatch(async (req, res) => {
+  const content = await ServiceModal.find();
+  return res.status(200).send(content);
+});
+
+export const deleteService = TryCatch(async (req, res) => {
+  const { id } = req.params;
+  console.log("id", id);
+
+  const service = await ServiceModal.findByIdAndDelete(id);
+
+  if (!service) {
+    return res.status(404).json({
+      success: false,
+      message: "Service not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Service deleted successfully",
+  });
 });
