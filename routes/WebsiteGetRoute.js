@@ -9,6 +9,7 @@ import {
   postContact,
   getTerms,
   getprivacyPolicy,
+  scholarShip,
 } from "../controllers/WebsiteController.js";
 
 const router = Router();
@@ -23,5 +24,7 @@ router.get("/terms", getTerms);
 router.get("/privacy", getprivacyPolicy);
 
 router.post("/contact", postContact);
+// scholar ship
+router.get("/scholar-ship", scholarShip);
 
 export default router;

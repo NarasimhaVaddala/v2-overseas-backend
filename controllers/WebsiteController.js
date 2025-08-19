@@ -213,3 +213,15 @@ export const getprivacyPolicy = TryCatch(async (req, res) => {
 
   return res.status(200).send({ hero, terms });
 });
+
+// scholar ship
+export const scholarShip = TryCatch(async (req, res) => {
+  const hero = await HeroSectionModal.findOne({
+    page: "scholar-ship",
+  }).lean();
+
+  const result = {
+    hero,
+  };
+  return res.status(200).send(result);
+});
