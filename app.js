@@ -10,8 +10,10 @@ import ContentRoute from "./routes/ContentRoute.js";
 import ContactAndAddress from "./routes/ContactAndAddress.js";
 import Websiteroute from "./routes/WebsiteGetRoute.js";
 import AuthRouter from "./routes/AuthRoute.js";
-
+import ScholarShipRoute from "./routes/ScholarShip.js";
 import CardsRoute from "./routes/CardRoute.js";
+import ApplyScholarShip from "./routes/ApplyScholarShip.route.js";
+import CompanyRoute from "./routes/company.details.route.js";
 
 dotenv.config({ path: "./.env" });
 
@@ -45,6 +47,9 @@ app.use("/cards", CardsRoute);
 
 app.use("/api", Websiteroute);
 app.use("/auth", AuthRouter);
+app.use("/scholar-ship", ScholarShipRoute);
+app.use("/apply-scholar-ship", ApplyScholarShip);
+app.use("/company", CompanyRoute);
 
 app.use(errorMiddleware);
 
