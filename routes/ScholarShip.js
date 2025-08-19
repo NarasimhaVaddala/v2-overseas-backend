@@ -13,8 +13,21 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // normalize time (ignore hours)
+
+  const { status } = req.query || {};
+
+  let filter = {};
+
+  if (status === "active") {
+    filter.expireDate = { $gte: today }; // today + future
+  }
+
   try {
-    const scholarships = await ScholarshipModal.find().sort({ createdAt: -1 });
+    const scholarships = await ScholarshipModal.find(filter).sort({
+      createdAt: -1,
+    });
     res.status(200).json(scholarships);
   } catch (error) {
     res
