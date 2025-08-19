@@ -16,7 +16,7 @@ import upload from "../middlewares/multerconfig.js";
 
 const router = Router();
 
-router.post("/add-content", upload.single("image"), AddContent);
+router.post("/add-content/:page/:section", upload.single("image"), AddContent);
 router.put("/edit-content/:id", upload.single("image"), EditContent);
 router.get("/get-content/:page/:section", getContent);
 

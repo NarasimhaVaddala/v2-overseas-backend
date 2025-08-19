@@ -4,17 +4,22 @@ import ServiceModal from "../models/Service.js";
 import UniversityModal from "../models/UniversityModal.js";
 
 export const AddContent = TryCatch(async (req, res) => {
-  // const { page, section } = req.params;
+  console.log("THIS API HITINHG");
 
-  // if (!page || !section) {
-  //   return res.status(400).send({ message: "Page and section is required" });
-  // }
+  const { page, section } = req.params;
+
+  if (!page || !section) {
+    return res.status(400).send({ message: "Page and section is required" });
+  }
 
   const { title, description, extraPoints } = req.body;
 
   const image = req.file;
 
-  const body = {};
+  const body = {
+    page,
+    section,
+  };
 
   if (title) body.title = title;
   if (description) body.description = description;
@@ -127,7 +132,7 @@ export const getContent = TryCatch(async (req, res) => {
     return res.status(200).send(content);
   }
 
-  const content = await ContentModal.find();
+  const content = await ContentModal.findOne({ page, section });
   return res.status(200).send(content);
 });
 

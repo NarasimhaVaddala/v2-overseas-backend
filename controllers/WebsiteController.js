@@ -13,6 +13,8 @@ export const GetAllHomePage = TryCatch(async (req, res) => {
 
   // 2. Fetch all ContentModal data in a single query using $in
   const contentQueries = [
+    { page: "home", section: "hero-2" },
+    { page: "home", section: "hero-3" },
     { page: "home", section: "second" },
     { page: "home", section: "online-councelling" },
     { page: "home", section: "aboutus" },
@@ -21,6 +23,8 @@ export const GetAllHomePage = TryCatch(async (req, res) => {
   const contentResults = await ContentModal.find({
     $or: contentQueries,
   }).lean();
+
+  console.log(contentResults);
 
   // Index content by section for fast lookup
   const contentMap = {};
@@ -46,9 +50,13 @@ export const GetAllHomePage = TryCatch(async (req, res) => {
 
   const universities = await UniversityModal.find({});
 
+  const newHero = [heroData, contentMap["hero-2"], contentMap["hero-3"]];
+
   // Construct response in required order
   const sections = {
-    hero: heroData,
+    hero: newHero,
+    // hero2: contentMap["hero-2"],
+    // hero3: contentMap["hero-3"],
     second: contentMap["second"],
     cards: cardMap["study"],
     onlineCouncelling: contentMap["online-councelling"],
