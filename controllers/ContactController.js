@@ -13,6 +13,9 @@ export const AddEditocialOrContact = TryCatch(async (req, res) => {
     email,
     mobile,
     landline,
+    mobileCode,
+    whatsappCode,
+    landlineCode,
   } = req.body;
 
   const updates = {};
@@ -25,6 +28,10 @@ export const AddEditocialOrContact = TryCatch(async (req, res) => {
   if (email) updates.email = email;
   if (mobile) updates.mobile = mobile;
   if (landline) updates.landline = landline;
+
+  if (mobileCode) updates.mobileCode = mobileCode;
+  if (whatsappCode) updates.whatsappCode = whatsappCode;
+  if (landlineCode) updates.landlineCode = landlineCode;
 
   const ContactInfo = await contactinfo.findOneAndUpdate(
     {},
