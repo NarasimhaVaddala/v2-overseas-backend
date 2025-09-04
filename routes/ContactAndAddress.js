@@ -6,6 +6,7 @@ import {
   DeleteAddress,
   EditAddress,
   GetSocialOrContact,
+  deleteContactForm,
   getAddress,
   getAllPeopleContacted,
 } from "../controllers/ContactController.js";
@@ -21,5 +22,6 @@ router.put("/edit-address/:id", EditAddress);
 router.delete("/delete-address/:id", DeleteAddress);
 
 router.get("/admin-contacts", getAllPeopleContacted);
+router.delete("/admin-contacts/:id", deleteContactForm);
 
 export default router;
