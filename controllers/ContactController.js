@@ -139,3 +139,10 @@ export const getAllPeopleContacted = TryCatch(async (req, res) => {
 
   return res.status(200).send(contacts);
 });
+
+export const deleteContactForm = TryCatch(async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ message: "Id is required!" });
+  await ContactUsModal.findByIdAndDelete(id);
+  return res.status(204).json({ message: "Deleted" });
+});
